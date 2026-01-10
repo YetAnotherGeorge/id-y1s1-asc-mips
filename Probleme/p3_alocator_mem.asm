@@ -241,8 +241,8 @@ free:
 
         sll $t1, $t0, 2
         add $t1, $s1, $t1 # &LOG + i * sizeof(int) 
+        lw $t2, 0($t1) # a = MEMLOG[i]
     
-        la $t2, 0($t1) # a = MEMLOG[i]
         bne $t2, $a0, free_loop1_ptr_neq # if (a == ptr) ... else goto free_loop1_ptr_neq
             # sterge pozitia i ($t0) prin shift stanga
             move $t3, $t0 # j = i
@@ -250,16 +250,92 @@ free:
             free_loop2:
                 bge $t3, $t4, free_loop2_end
 
+                sll $t5, $t3, 2 # t3 = j * 4
+                add $t5, $s1, $t5 # &LOG + j * sizeof(int)
+                lw $t6, 8($t5) # LOG[j + 2]
 
+                sw $t6, 0($t5) # LOG[j] = LOG[j+2]
+
+                addi $t3, $t3, 1
+                b free_loop2
             free_loop2_end:
 
-            # MEMLOG_USED_COUNT -= 2;
-            # return;
+            sub $s0, $s0, 2
+            sw $s0, LOG_USED_COUNT
+            b free_loop1_end
 
         free_loop1_ptr_neq:
         addi $t0, $t0, 2
         b free_loop1
     free_loop1_end:
+
+    # End
+    lw $s7, 0($sp)
+    lw $s6, 4($sp)
+    lw $s5, 8($sp)
+    lw $s4, 12($sp)
+    lw $s3, 16($sp)
+    lw $s2, 20($sp)
+    lw $s1, 24($sp)
+    lw $s0, 28($sp)
+
+    lw $ra, 32($sp) # return address
+    lw $fp, 36($sp) # Frame pointer
+    addi $sp, $sp, 40
+    jr $ra # inapoi
+
+# void compact()
+compact: 
+    addi $sp, $sp, -40
+    sw $fp, 36($sp) # Frame pointer
+    sw $ra, 32($sp) # Return Address
+
+    sw $s0, 28($sp)
+    sw $s1, 24($sp)
+    sw $s2, 20($sp)
+    sw $s3, 16($sp)
+    sw $s4, 12($sp)
+    sw $s5, 8($sp)
+    sw $s6, 4($sp)
+    sw $s7, 0($sp)
+    move $fp, $sp # Frame pointer nou
+
+    # Body
+    la $s1, MEM
+    la $s2, LOG
+    lw $s3, LOG_USED_COUNT
+    move $s4, $s1 # ultima adresa utilizabila pentru compactare (apu)
+
+    li $t0, 0 # i
+    compact_loop1: 
+        bge $t0, $s3, compact_loop1_end
+
+        sll $t1, $t0, 2 
+        add $t1, $s2, $t1 # &LOG + i * 4
+        lw $t2, 0($t1) # a = addr
+        lw $t3, 4($t1) # s = alloc size
+
+        bge $s4, $t2, compact_after_move # daca apu < a -> exista spatiu gol
+            li $t4, 0 # j
+            compact_loop2:
+                bge $t4, $t3, compact_loop2_end
+
+                add $t5, $t2, $t4 # t5 = a + j
+                add $t6, $s4, $t4 # t6 = apu + j
+
+                lb $t7, 0($t5) # char ch = *(a + j)
+                sb $t7, 0($t6)
+
+                addi $t4, $t4, 1
+                b compact_loop2
+            compact_loop2_end:
+            sw $s4, 0($t1) # updateaza adresa de start in LOG[i]
+        compact_after_move:
+        add $s4, $s4, $t3 # apu += s
+
+        addi $t0, $t0, 2
+        b compact_loop1
+    compact_loop1_end:
 
     # End
     lw $s7, 0($sp)
