@@ -30,12 +30,112 @@ LOG: .space 512 # Fiecare item va avea 2 word-uri: (LOCATIE_IN_MEM, nr. bytes)
 LOG_LEN: .word 512
 LOG_USED_COUNT: .word 0 # Pozitia urmatorului 
 
+# Text pentru demo
+str_malloc:   .asciiz "Alocat bloc: "
+str_free:     .asciiz "\nStergere bloc din mijloc...\n"
+str_compact:  .asciiz "compact()...\n"
+str_log_pos:  .asciiz "LOG - Addr: "
+str_log_size: .asciiz " Lungime: "
+str_nl:       .asciiz "\n"
+
 .text
 .globl main
 main: 
-    li $v0, EXIT_WCODE # exit2 call code
+    # 1. Bloc A (64 octeti)
+    li $a0, 64
+    jal malloc
+    move $s0, $v0 
+    
+    la $a0, str_malloc
+    li $v0, PRINT_STR
+    syscall
+    move $a0, $s0
+    li $v0, PRINT_INT
+    syscall
+
+    # 2. Bloc B (128 octeti)
+    li $a0, 128
+    jal malloc
+    move $s1, $v0
+    
+    la $a0, str_nl
+    li $v0, PRINT_STR
+    syscall
+    la $a0, str_malloc
+    syscall
+    move $a0, $s1
+    li $v0, PRINT_INT
+    syscall
+
+    # 3. Bloc C (32 octeti)
+    li $a0, 32
+    jal malloc
+    move $s2, $v0
+    
+    la $a0, str_nl
+    li $v0, PRINT_STR
+    syscall
+    la $a0, str_malloc
+    syscall
+    move $a0, $s2
+    li $v0, PRINT_INT
+    syscall
+
+    # 4. free(B)
+    la $a0, str_free
+    li $v0, PRINT_STR
+    syscall
+    move $a0, $s1
+    jal free
+
+    # 5. compact()
+    la $a0, str_compact
+    li $v0, PRINT_STR
+    syscall
+    jal compact
+
+    # 6. print_log()
+    jal print_log
+
+    # Exit
+    li $v0, EXIT_WCODE
     li $a0, 0
     syscall
+
+# print_log(): afiseaza elementele din log
+print_log:
+    lw $t8, LOG_USED_COUNT
+    la $t9, LOG
+    li $t0, 0
+    print_log_loop:
+        bge $t0, $t8, print_log_end
+        
+        la $a0, str_log_pos
+        li $v0, PRINT_STR
+        syscall
+        
+        sll $t1, $t0, 2
+        add $t1, $t9, $t1
+        lw $a0, 0($t1) # LOG[i]
+        li $v0, PRINT_INT
+        syscall
+        
+        la $a0, str_log_size
+        li $v0, PRINT_STR
+        syscall
+        
+        lw $a0, 4($t1) # LOG[i+1]
+        li $v0, PRINT_INT
+        syscall
+        
+        la $a0, str_nl
+        li $v0, PRINT_STR
+        syscall
+        
+        addi $t0, $t0, 2
+        j print_log_loop
+    print_log_end:
+    jr $ra
 
 # bool log_insert_ordered(int mem_addr, int alloc_size_bytes): 
 #   Garanteaza ca log va contine adrese in ordine
