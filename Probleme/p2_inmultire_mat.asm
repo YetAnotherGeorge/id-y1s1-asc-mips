@@ -1,3 +1,11 @@
+# II.26) (15 puncte)
+#  Program de inmultire a doua matrici liniarizate. Matricile sursa se dau
+#   sub forma unor variabile initializate la declarare cu siruri de word-uri,
+#   dimensiunile lor se dau sub forma a trei variabile byte declarate cu
+#   initializare, pentru matricea rezultat se va declara o variabila
+#   urmata de un numar corespunzator de bytes neinitializati.
+
+
 .data
 # DEFINE-URI SYSCALLS
 .eqv PRINT_INT    1   

@@ -1,3 +1,11 @@
+# II.4) (3 puncte)
+# Program care verifica daca un numar natural este prim. Numarul este dat intr-o variabila n de 
+# tip word declarata cu initializare in program; raspunsul va fi stocat intr-o variabila x de 
+# tip byte sub forma 
+# 0=neprim,
+# 1=prim.
+
+
 .data
 # DEFINE-URI SYSCALLS
 .eqv PRINT_INT    1   

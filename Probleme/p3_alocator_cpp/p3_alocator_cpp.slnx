@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="p3_alocator_cpp.vcxproj" Id="2f2de5ac-cf7e-4969-b4ca-b1a0727424f4" />
+</Solution>
