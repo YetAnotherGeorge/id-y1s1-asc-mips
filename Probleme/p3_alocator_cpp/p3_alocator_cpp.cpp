@@ -92,17 +92,18 @@ void free_custom(int ptr) {
 }
 void compact_custom() {
    int apu = (int)MEM; // address prev usable
-   for (int i = 0; i < MEMLOG_USED_COUNT; i++) {
+   for (int i = 0; i < MEMLOG_USED_COUNT; i += 2) {
       int a = MEMLOG[i]; // addr
       int s = MEMLOG[i + 1]; // alloc size
 
       if (apu < a) { // move block down
          for (int j = 0; j < s; j++) {
             // move a + j to apu + j
-            int* addr_from = (int*)(a + j);
-            int* addr_to = (int*)(apu + j);
+            char* addr_from = (char*)(a + j);
+            char* addr_to = (char*)(apu + j);
             *addr_to = *addr_from;
          }
+         MEMLOG[i] = apu;
       }
       apu += s; // update apu to end of this block
    }
@@ -111,11 +112,13 @@ void compact_custom() {
 #include "tests_log_ins_ordered.h"
 #include "tests_malloc_custom.h"
 #include "tests_free_custom.h"
+#include "tests_compact_custom.h"
 
 int main() {
-   TestLogInsertOrdered::run_all_tests();
+   /*TestLogInsertOrdered::run_all_tests();
    TestMallocCustom::run_all_tests();
-   TestFreeCustom::run_all_tests();
+   TestFreeCustom::run_all_tests();*/
+   TestCompactCustom::run_all_tests();
 
    return 0;
 }

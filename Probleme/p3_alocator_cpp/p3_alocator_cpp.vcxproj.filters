@@ -29,5 +29,8 @@
     <ClInclude Include="tests_malloc_custom.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="tests_compact_custom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

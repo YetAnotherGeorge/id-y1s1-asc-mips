@@ -130,6 +130,7 @@
     <ClCompile Include="p3_alocator_cpp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="tests_compact_custom.h" />
     <ClInclude Include="tests_free_custom.h" />
     <ClInclude Include="tests_log_ins_ordered.h" />
     <ClInclude Include="tests_malloc_custom.h" />
