@@ -36,8 +36,8 @@ bool log_insert_ordered(int mem_addr, int alloc_size) {
    // Insert at ins_pos
    if (ins_pos < MEMLOG_USED_COUNT) {
       // shift MEMLOG_USED_COUNT -> 2 from index i
-      for (int j = MEMLOG_USED_COUNT - 1; j >= ins_pos; j--) {
-         MEMLOG[j + 2] = MEMLOG[j];
+      for (int i = MEMLOG_USED_COUNT - 1; i >= ins_pos; i--) {
+         MEMLOG[i + 2] = MEMLOG[i];
       }
    }
 
@@ -115,9 +115,9 @@ void compact_custom() {
 #include "tests_compact_custom.h"
 
 int main() {
-   /*TestLogInsertOrdered::run_all_tests();
+   TestLogInsertOrdered::run_all_tests();
    TestMallocCustom::run_all_tests();
-   TestFreeCustom::run_all_tests();*/
+   TestFreeCustom::run_all_tests();
    TestCompactCustom::run_all_tests();
 
    return 0;

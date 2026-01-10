@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cstring>
 
+// AI GENERATED TESTS 
+
 namespace TestMallocCustom {
    
    // Helper function to reset memory state
